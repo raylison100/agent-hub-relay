@@ -1,0 +1,28 @@
+{
+  "name": "agent-hub-relay",
+  "version": "0.1.0",
+  "description": "Retransmissor WebSocket sem estado entre daemons e clientes do Agent Hub, com entrada de webhooks",
+  "type": "module",
+  "bin": {
+    "agent-hub-relay": "./dist/index.js"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "dev": "tsx src/index.ts",
+    "start": "node dist/index.js"
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "dependencies": {
+    "@agent-hub/core": "link:../core",
+    "ws": "^8.21.3"
+  },
+  "devDependencies": {
+    "@types/node": "^26.5.0",
+    "@types/ws": "^8.18.1",
+    "tsx": "^4.23.13",
+    "typescript": "^7.0.2"
+  }
+}
