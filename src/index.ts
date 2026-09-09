@@ -3,6 +3,7 @@ import { createHash, randomUUID } from 'node:crypto'
 import { createServer, type IncomingMessage, type ServerResponse } from 'node:http'
 import { WebSocketServer, type WebSocket } from 'ws'
 import {
+  isSealed,
   relayHeaders,
   type ClientToRelay,
   type DaemonToRelay,
@@ -116,7 +117,16 @@ function onClient(ws: WebSocket): void {
   ws.on('close', () => detachClient(client))
 }
 
-function onClientMessage(client: ClientConn, msg: ClientToRelay): void {
+function onClientMessage(client: ClientConn, incoming: ClientToRelay): void {
+  if (isSealed(incoming)) {
+    if (!client.device || !client.channel) {
+      sendClient(client, { type: 'relay.error', message: 'anexe a um dispositivo com relay.attach' })
+      return
+    }
+    sendDevice(client.device, { t: 'frame', ch: client.channel, frame: incoming })
+    return
+  }
+  const msg = incoming
   if (msg.type === 'relay.auth') {
     if (!msg.account_token || msg.account_token.length < 32) {
       sendClient(client, { type: 'relay.error', message: 'token de conta invalido' })
